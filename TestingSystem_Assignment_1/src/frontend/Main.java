@@ -1,11 +1,11 @@
 package frontend;
 
-import testingsystem.TestingSystem1;
+import testingsystem.TestingSystem2;
 
 public class Main {
 
 	public static void main(String[] args) {
-		TestingSystem1 testingSystem1 = new TestingSystem1();
-		testingSystem1.question1();
+		TestingSystem2 testingSystem2 = new TestingSystem2();
+		testingSystem2.question5();
 	}
 }

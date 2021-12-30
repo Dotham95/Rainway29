@@ -2,14 +2,13 @@ package testingsystem;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
 import entity.Account;
 import entity.Department;
 import entity.Group;
 import entity.Position;
 import entity.PositionName;
 
-public class TestingSystem1 {
+public class TestingSystem2 {
 	Department department1, department2, department3;
 	Department[] listDepartments = new Department[3];
 	Account account1, account2, account3, account4;
@@ -25,7 +24,7 @@ public class TestingSystem1 {
 	Position position1, position2, position3, position4;
 	Position[] listPositions = new Position[4];
 
-	public TestingSystem1() {
+	public TestingSystem2() {
 		department1 = new Department(1, "Dev");
 		department2 = new Department(2, "Sale");
 		department3 = new Department(3, "Marketing");
@@ -33,19 +32,6 @@ public class TestingSystem1 {
 		listDepartments[0] = department1;
 		listDepartments[1] = department2;
 		listDepartments[2] = department3;
-
-		account1 = new Account(1, "chi90@gmail.com", "Thuychi", "Nguyen thuy Chi", department1, position1, groupAcc1);
-		account2 = new Account(2, "ngoclan@gmail.com", "Lanngoc", "Ninh Duong Lan Ngoc", department3, position3,
-				groupAcc2);
-		account3 = new Account(3, "tranxin@gmail.com", "tranthanh", "Huynh Tran Thanh", department3, position2,
-				groupAcc3);
-		account4 = new Account(4, "denvau89@gmail.com", "DenVau", "Nguyen Duc Cuong", department2, position4,
-				groupAcc3);
-
-		listAccounts[0] = account1;
-		listAccounts[1] = account2;
-		listAccounts[2] = account3;
-		listAccounts[3] = account4;
 
 		position1 = new Position(1, PositionName.DEV);
 		position2 = new Position(2, PositionName.TEST);
@@ -66,6 +52,18 @@ public class TestingSystem1 {
 		listGroups[1] = group2;
 		listGroups[2] = group3;
 		listGroups[3] = group4;
+
+		account1 = new Account(1, "chi90@gmail.com", "Thuychi", "Nguyen thuy Chi", department1, position1, groupAcc1);
+		account2 = new Account(2, "ngoclan@gmail.com", "Lanngoc", "Ninh Duong Lan Ngoc", null, position3, groupAcc2);
+		account3 = new Account(3, "tranxin@gmail.com", "tranthanh", "Huynh Tran Thanh", department3, position2,
+				groupAcc3);
+		account4 = new Account(4, "denvau89@gmail.com", "DenVau", "Nguyen Duc Cuong", department2, position4,
+				groupAcc3);
+
+		listAccounts[0] = account1;
+		listAccounts[1] = account2;
+		listAccounts[2] = account3;
+		listAccounts[3] = account4;
 
 	}
 
@@ -138,7 +136,8 @@ public class TestingSystem1 {
 	public void question4() {
 		for (int i = 0; i < listAccounts.length; i++) {
 			Account a = listAccounts[0];
-			System.out.println(a.getPosition() == position1 ? "Đây là Developer" : "Người này không phải là Developer");
+			System.out.println(a.getPosition().getId() == position1.getId() ? "Đây là Developer"
+					: "Người này không phải là Developer");
 		}
 	}
 
@@ -229,9 +228,11 @@ public class TestingSystem1 {
 	public void question8() {
 		Account[] accountArray = { account1, account2, account3, account4 };
 		for (Account account : accountArray) {
-			System.out.println("Account Info: " + account.getId() + " Email: " + account.getEmail() + " Name: "
-					+ account.getFullName() + " " + account.getDepartment());
-			System.out.println("-----------------------------");
+			if (account != null) {
+				System.out.println("Account Info: " + account.getId() + " Email: " + account.getEmail() + " Name: "
+						+ account.getFullName() + " " + account.getDepartment());
+				System.out.println("-----------------------------");
+			}
 		}
 	}
 
@@ -407,12 +408,18 @@ public class TestingSystem1 {
 		Account[] accountArray = { account1, account2, account3, account4 };
 		int i = 0;
 		while (i < accountArray.length) {
+			// Account acc = accountArray[i];
 			if (i < 4) {
-				System.out.println("Thông tin account thứ " + (i + 1) + " " + "là:");
-				System.out.println("Email là: " + accountArray[i].getEmail());
-				System.out.println("Full name là: " + accountArray[i].getFullName());
-				System.out.println("Phòng ban là: " + accountArray[i].getDepartment().getName());
-				System.out.println("-----------------------------");
+				accountArray[i].printInfo(i + 1);
+//				System.out.println("Thông tin account thứ " + (i + 1) + " " + "là:");
+//				System.out.println("Email là: " + acc.getEmail());
+//				System.out.println("Full name là: " + acc.getFullName());
+//				if (acc.getDepartment() != null) {
+//					System.out.println("Phòng ban là: " + acc.getDepartment().getName());
+//				} else {
+//					System.out.println("Khong o trong phong ban nao");
+//				}
+//				System.out.println("-----------------------------");
 			}
 			i++;
 		}

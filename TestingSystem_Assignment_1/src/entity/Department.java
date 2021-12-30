@@ -1,13 +1,16 @@
 package entity;
 
 public class Department {
-	int id;
-	String name;
+	public int id;
+	public String name;
 
 	public Department(int id, String name) {
 		super();
 		this.id = id;
 		this.name = name;
+	}
+
+	public Department() {
 	}
 
 	@Override

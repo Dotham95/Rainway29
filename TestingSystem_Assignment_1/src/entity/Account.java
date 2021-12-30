@@ -11,14 +11,14 @@ public class Account {
 				+ Arrays.toString(groups) + "]";
 	}
 
-	int id;
-	String email;
-	String userName;
-	String fullName;
-	Department department;
-	Position position;
-	Date createDate;
-	Group[] groups;
+	public int id;
+	public String email;
+	public String userName;
+	public String fullName;
+	public Department department;
+	public Position position;
+	public Date createDate;
+	public Group[] groups;
 
 	public Account(int id, String email, String userName, String fullName, Department department, Position position,
 			Group[] groups) {
@@ -107,5 +107,17 @@ public class Account {
 
 	public void setGroups(Group[] groups) {
 		this.groups = groups;
+	}
+
+	public void printInfo(int stt) {
+		System.out.println("Thông tin account thứ " + stt + " " + "là:");
+		System.out.println("Email là: " + getEmail());
+		System.out.println("Full name là: " + getFullName());
+		if (getDepartment() != null) {
+			System.out.println("Phòng ban là: " + getDepartment().getName());
+		} else {
+			System.out.println("Khong o trong phong ban nao");
+		}
+		System.out.println("-----------------------------");
 	}
 }

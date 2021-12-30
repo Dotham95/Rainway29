@@ -2,7 +2,7 @@ package entity;
 
 public class Position {
 	int id;
-	PositionName name;
+	public PositionName name;
 	public Position(int id, PositionName name) {
 		super();
 		this.id = id;
