@@ -2,6 +2,7 @@ package frontend;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.Random;
 
 import entity.Account;
 import entity.Department;
@@ -11,11 +12,6 @@ import entity.PositionName;
 import utils.ScannerUtil;
 
 public class Exercise5Test2 {
-	private Account[] accArrays;
-	private Group[] groupArrays;
-	private int indexGroup;
-	private int indexAccount;
-
 	/*
 	 * Question 1: Viết lệnh cho phép người dùng nhập 3 số nguyên vào chương trình
 	 */
@@ -221,44 +217,37 @@ public class Exercise5Test2 {
 		Account[] accArray = { acc1, acc2, acc3 };
 		Group[] groupArray = { group1, group2, group3 };
 		System.out.println("Danh sách User đang có trên hệ thống: ");
-		for (int i = 0; i < accArray.length; i++) {
-			System.out.println(accArray[i].userName);
-			System.out.println("Mời bạn nhập vào UserName của account: ");
-			String userName = ScannerUtil.scanStr();
 
-			System.out.println("Danh sách Group đang có trên hệ thống: ");
-			for (int i1 = 0; i1 < groupArray.length; i1++) {
-				System.out.println(groupArray[i1].name);
-			}
-			System.out.println("Mời bạn nhập vào tên Group: ");
-			String groupName = ScannerUtil.scanStr();
-
-			indexGroup = -1;
-			for (int i1 = 0; i < groupArray.length; i++) {
-				if (groupArray[i1].name.equals(groupName)) {
-					indexGroup = i1;
-				}
-				indexAccount = -1;
-				for (int i2 = 0; i2 < accArray.length; i2++) {
-					if (accArray[i2].userName.equals(userName)) {
-						indexAccount = i2;
-					}
-				}
-				if (indexAccount < 0 || indexGroup < 0) {
-					System.out
-							.println("Kiểm tra lại thông tin bạn nhập, không có Account hoặc group này trên hệ thống");
-				} else {
-					for (int j = 0; j < accArray.length; j++) {
-						if (accArray[j].userName.equals(userName)) {
-							Group[] gpAdd = { groupArray[indexGroup] };
-							accArray[j].groups = gpAdd;
-							System.out.println("Bạn vừa Add group: " + accArray[indexAccount].groups[0].name
-									+ " cho Account: " + accArray[indexAccount].userName);
-						}
-					}
-				}
+		for (Account account : accArray) {
+			System.out.println(account.userName);
+		}
+		System.out.println("Mời bạn nhập vào UserName của account: ");
+		String userName = ScannerUtil.scanStr();
+		// lay ra account co ten trung voi ten vua nhap
+		Account accountSelected = null;
+		for (Account account : accArray) {
+			if (userName.equals(account.getUserName())) {
+				accountSelected = account;
+				break;
 			}
 		}
+		System.out.println("Danh sách Group đang có trên hệ thống: ");
+		for (int i1 = 0; i1 < groupArray.length; i1++) {
+			System.out.println(groupArray[i1].name);
+		}
+		System.out.println("Mời bạn nhập vào tên Group: ");
+		String groupName = ScannerUtil.scanStr();
+		//
+		Group groupSelected = null;
+		for (Group group : groupArray) {
+			if (groupName.equals(group.getName())) {
+				groupSelected = group;
+				break;
+			}
+		}
+		groupSelected.setAccounts(new Account[] { accountSelected });
+		System.out.println("-----Ket qua la-------");
+		System.out.println(groupSelected);
 	}
 
 	private Date Date(int i, int j, int k) {
@@ -282,29 +271,26 @@ public class Exercise5Test2 {
 		while (true) {
 			System.out.println("Mời bạn chọn chức năng: 1. Tạo Account, 2. Tạo Department, 3. Add Group vào Account");
 			choose = ScannerUtil.scanInt();
-			if (choose == 1 || choose == 2) {
-				switch (choose) {
-				case 1:
-					question5();
-					break;
-				case 2:
-					question6();
-					break;
-				case 3:
-					question9();
-					break;
-				}
-				System.out.println("Bạn có muốn tiếp tục không, hãy chọn Menu, Chọn 0 để thoát chương trình!!!!");
-				int b = ScannerUtil.scanInt();
-				if (b == 0) {
-					System.out.println("Good Bye, See you again!!!");
-					return;
-				}
-			} else {
-				System.out.println("Xin mời bạn nhập lại: ");
+			switch (choose) {
+			case 1:
+				question5();
+				break;
+			case 2:
+				question6();
+				break;
+			case 3:
+				question9();
+				break;
+			case 0:
+				System.out.println("Good Bye, See you again!!!");
+				return;
+			default:
+				System.out.print("Xin mời bạn nhập lại, ");
+				System.out.println("Hoặc chọn 0 để thoát chương trình!!!!");
 			}
 		}
 	}
+
 	/*
 	 * Question 11: Tiếp tục Question 10 Bổ sung thêm vào bước 2 của Question 8 như
 	 * sau: Nếu người dùng nhập vào 4 thì sẽ thực hiện chức năng thêm account vào 1
@@ -313,5 +299,111 @@ public class Exercise5Test2 {
 	 * username của account Bước 3: Sau đó chương trình sẽ chọn ngẫu nhiên 1 group
 	 * Bước 4: Thêm account vào group chương trình vừa chọn ngẫu nhiên
 	 */
+	public void question11() {
+		int choose;
+		while (true) {
+			System.out.println(
+					"Mời bạn chọn chức năng: 1. Tạo Account, 2. Tạo Department, 3. Add Group vào Account, 4.Thêm Account vào 1 nhóm ngẫu nhiên");
+			choose = ScannerUtil.scanInt();
+			switch (choose) {
+			case 1:
+				question5();
+				break;
+			case 2:
+				question6();
+				break;
+			case 3:
+				question9();
+				break;
+			case 4:
+				addAccountToGroup();
+				break;
+			case 0:
+				System.out.println("Good Bye, See you again!!!");
+				return;
+			default:
+				System.out.print("Xin mời bạn nhập lại, ");
+				System.out.println("Hoặc chọn 0 để thoát chương trình!!!!");
+			}
+		}
+	}
 
+	private void addAccountToGroup() {
+		Group group1 = new Group();
+		group1.id = 1;
+		group1.name = "Testing_System";
+		group1.createDate = Date(2021, 12, 14);
+
+		Group group2 = new Group();
+		group2.id = 2;
+		group2.name = "Development";
+		group2.createDate = Date(2021, 12, 24);
+
+		Group group3 = new Group();
+		group3.id = 3;
+		group3.name = "Sale";
+		group3.createDate = Date(2021, 10, 05);
+
+		Account acc1 = new Account();
+		acc1.id = 1;
+		acc1.email = "chi90@gmail.com";
+		acc1.userName = "Thuychi";
+		acc1.fullName = "Nguyen thuy Chi";
+		acc1.createDate = Date(2021, 11, 10);
+
+		Account acc2 = new Account();
+		acc2.id = 2;
+		acc2.email = "ngoclan@gmail.com";
+		acc2.userName = "Lanngoc";
+		acc2.fullName = "Ninh Duong Lan Ngoc";
+		acc2.createDate = Date(2021, 03, 17);
+
+		Account acc3 = new Account();
+		acc3.id = 3;
+		acc3.email = "tranxin@gmail.com";
+		acc3.userName = "tranthanh";
+		acc3.fullName = "Huynh Tran Thanh";
+		acc3.createDate = Date(2021, 10, 19);
+
+		Account[] accArray = { acc1, acc2, acc3 };
+		Group[] groupArray = { group1, group2, group3 };
+
+		System.out.println("Danh sách User đang có trên hệ thống: ");
+
+		for (Account account : accArray) {
+			System.out.println(account.userName);
+		}
+		System.out.println("Mời bạn nhập vào UserName của account: ");
+		String userName = ScannerUtil.scanStr();
+
+		for (Account account : accArray) {
+			if (userName.equals(account.getUserName())) {
+				break;
+			}
+		}
+		System.out.println("Danh sách Group đang có trên hệ thống: ");
+		for (int i1 = 0; i1 < groupArray.length; i1++) {
+			System.out.println(groupArray[i1].name);
+		}
+		Random random = new Random();
+		int indexGroup = random.nextInt(2);
+		int indexAccount = -1;
+		for (int j = 0; j < accArray.length; j++) {
+			if (accArray[j].userName.equals(userName)) {
+				indexAccount = j;
+			}
+		}
+		if (indexAccount < 0) {
+			System.out.println("Kiểm tra lại thông tin bạn nhập, không có Account này trên hệ thống");
+		} else {
+			for (int j = 0; j < accArray.length; j++) {
+				if (accArray[j].userName.equals(userName)) {
+					Group[] gpAdd = { groupArray[indexGroup] };
+					accArray[j].groups = gpAdd;
+					System.out.println("Bạn vừa Add group: " + accArray[indexAccount].groups[0].name + " cho Account: "
+							+ accArray[indexAccount].userName);
+				}
+			}
+		}
+	}
 }

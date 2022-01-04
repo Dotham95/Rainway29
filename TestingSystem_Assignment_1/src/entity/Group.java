@@ -65,8 +65,17 @@ public class Group {
 	public void setCreateDate(Date i) {
 		this.createDate = i;
 	}
+	
+	public String listAccount() {
+		String tString = "List account [";
+		for (Account account : accounts) {
+			tString += account.getFullName() +",";
+		}
+		tString +="]";
+		return tString;
+	}
 
 	public String toString() {
-		return "Group [id=" + id + ", name=" + name + ", creator=" + creator + ", createDate=" + createDate + "]";
+		return "Group [id=" + id + ", name=" + name + ", creator=" + creator + ", createDate=" + createDate + listAccount()+ "]";
 	}
 }
