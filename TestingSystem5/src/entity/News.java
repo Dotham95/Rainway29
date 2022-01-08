@@ -2,11 +2,11 @@ package entity;
 
 public class News implements INews {
 	private int id;
-	private String Title;
-	private String PublishDate;
-	private String Author;
-	private String Content;
-	private Float AverageRate;
+	private String title;
+	private String publishDate;
+	private String author;
+	private String content;
+	private Float averageRate;
 	private int[] rate;
 	public static int COUNT = 0;
 
@@ -14,11 +14,11 @@ public class News implements INews {
 		super();
 		COUNT++;
 		this.id = COUNT;
-		Title = title;
-		PublishDate = publishDate;
-		Author = author;
-		Content = content;
-		AverageRate = getAverageRate();
+		this.title = title;
+		this.publishDate = publishDate;
+		this.author = author;
+		this.content = content;
+		this.averageRate = getAverageRate();
 		this.rate = rate;
 	}
 
@@ -31,43 +31,43 @@ public class News implements INews {
 	}
 
 	public String getTitle() {
-		return Title;
+		return title;
 	}
 
 	public void setTitle(String title) {
-		Title = title;
+		this.title = title;
 	}
 
 	public String getPublishDate() {
-		return PublishDate;
+		return publishDate;
 	}
 
 	public void setPublishDate(String publishDate) {
-		PublishDate = publishDate;
+		this.publishDate = publishDate;
 	}
 
 	public String getAuthor() {
-		return Author;
+		return author;
 	}
 
 	public void setAuthor(String author) {
-		Author = author;
+		this.author = author;
 	}
 
 	public String getContent() {
-		return Content;
+		return content;
 	}
 
 	public void setContent(String content) {
-		Content = content;
+		this.content = content;
 	}
 
 	public Float getAverageRate() {
-		return AverageRate;
+		return averageRate;
 	}
 
 	public void setAverageRate(Float averageRate) {
-		AverageRate = averageRate;
+		this.averageRate = averageRate;
 	}
 
 	public int[] getRate() {
@@ -87,8 +87,8 @@ public class News implements INews {
 
 	@Override
 	public float calculate() {
-		AverageRate = (float) ((rate[0] + rate[1] + rate[2]) / 3);
-		return AverageRate;
+		averageRate = (float) ((rate[0] + rate[1] + rate[2]) / 3);
+		return averageRate;
 	}
 
 }

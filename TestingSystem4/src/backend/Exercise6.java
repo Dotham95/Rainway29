@@ -1,6 +1,9 @@
 package backend;
 
+import entity.Employee;
+import entity.Manager;
 import entity.VietnamesePhone;
+import entity.Waiter;
 import utils.ScannerUtil;
 
 public class Exercise6 {
@@ -50,6 +53,48 @@ public class Exercise6 {
 				vnPhone.printContact();
 				break;
 			case 6:
+				return;
+			default:
+				System.out.println("Bạn đã chọn sai chức năng mời chọn lại!!");
+				break;
+			}
+		}
+	}
+
+	public void question2() {
+		while (true) {
+			System.out.println("~~~~~~~~~~ Mời bạn lựa chọn chức năng bạn muốn sử dụng ~~~~~~~");
+			System.out.println("1. Thêm Employee");
+			System.out.println("2. Thêm Manager");
+			System.out.println("3. Thêm Waiter");
+			System.out.println("4. Thoát khỏi chương trình");
+			int selected = ScannerUtil.scanInt();
+			switch (selected) {
+			case 1:
+				System.out.println("Mời bạn nhập vào tên Employee");
+				String employeeName = ScannerUtil.scanStr();
+				System.out.println("Mời bạn nhập vào SalaryRatio");
+				Double employeeSalaryRatio = (double) ScannerUtil.scanInt();
+				Employee employee = new Employee(employeeName, employeeSalaryRatio);
+				employee.displayInfor();
+				break;
+			case 2:
+				System.out.println("Mời bạn nhập vào tên Manager");
+				String managerName = ScannerUtil.scanStr();
+				System.out.println("Mời bạn nhập vào SalaryRatio");
+				Double managerSaralaryRatio = (double) ScannerUtil.scanInt();
+				Manager manager = new Manager(managerName, managerSaralaryRatio);
+				manager.displayInfor();
+				break;
+			case 3:
+				System.out.println("Mời bạn nhập vào tên Waiter");
+				String waiterName = ScannerUtil.scanStr();
+				System.out.println("Mời bạn nhập vào SalaryRatio");
+				Double waiterSalaryRatio = (double) ScannerUtil.scanInt();
+				Waiter waiter = new Waiter(waiterName, waiterSalaryRatio);
+				waiter.displayInfor();
+				break;
+			case 4:
 				return;
 			default:
 				System.out.println("Bạn đã chọn sai chức năng mời chọn lại!!");

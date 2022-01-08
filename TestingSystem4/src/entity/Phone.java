@@ -1,12 +1,16 @@
 package entity;
 
+import java.util.ArrayList;
+
 public abstract class Phone {
 
-	public abstract void insertContact(String name, String phone);
+	ArrayList<Contact> contacts = new ArrayList<>();
 
-	public abstract void removeContact(String name);
+	abstract void insertContact(String name, String phone);
 
-	public abstract void updateContact(String name, String newPhone);
+	abstract void removeContact(String name);
 
-	public abstract void searchContact(String name);
+	abstract void updateContact(String name, String newPhone);
+
+	abstract void searchContact(String name);
 }

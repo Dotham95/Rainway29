@@ -1,12 +1,11 @@
 package backend;
 
 import java.util.ArrayList;
-
 import entity.News;
 import utils.ScannerUtil;
 
 public class Exercise1 {
-	private ArrayList<News> listNews;
+	ArrayList<News> listNews = new ArrayList<News>();
 
 	public void question1() {
 		loadMenu();
