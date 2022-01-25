@@ -21,4 +21,22 @@ public class AccountControllerImpl implements IAccountController {
 		return accService.getAllAccount();
 	}
 
+	public Account findAccountByUserName(String userName) throws SQLException {
+		if (userName.isBlank() || userName.isEmpty()) {
+			return null;
+		}
+		return accService.findAccByUserName(userName);
+	}
+
+	public String delAccountByUserName(String userName) throws SQLException {
+		if (userName.isBlank() || userName.isEmpty()) {
+			return null;
+		}
+		return accService.delAccByUserName(userName);
+	}
+
+	public boolean createAccount(Account account) throws SQLException {
+		return accService.createAcc(account);
+
+	}
 }

@@ -19,4 +19,28 @@ public class AccountServiceImpl implements IAccountService {
 		return accountDao.getAllAccount();
 	}
 
+	public Account findAccByUserName(String userName) throws SQLException {
+		// logic
+		String userNameLowerCase = userName.toLowerCase().trim();
+
+		return accountDao.findAccByUserName(userNameLowerCase);
+	}
+
+	public String delAccByUserName(String userName) throws SQLException {
+
+		if (accountDao.delAccByUserName(userName) > 0) {
+			return "Tài khoản đã xoá thành công";
+
+		}
+		return "Không tìm thấy tài khoản bạn cần xoá";
+
+	}
+
+	public boolean createAcc(Account account) throws SQLException {
+		if (accountDao.createAccount(account) > 0) {
+			return true;
+		}
+		return false;
+	}
+
 }
