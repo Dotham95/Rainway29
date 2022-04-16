@@ -1,9 +1,50 @@
 var addNew = false;
+var username = "";
+var password = "";
+var accounts = [];
+var currentPage = 1;
+var size = 5;
+var arrayDepartment = [];
+var arrayPosition = [];
 
+$(function () {
+  $(".header").load("header.html");
+  $(".main").load("home.html");
+  $(".footer").load("footer.html");
+});
+
+function clickNavHome() {
+  $(".main").load("home.html");
+}
+
+function clickNavViewListAccounts() {
+  $(".main").load("crud.html", function () {
+    buildTable();
+  });
+}
+function clickNavlogout() {
+  $(".main").load("home.html");
+}
+function login() {
+  username = $("#username").val();
+  password = $("#password").val();
+  var url = "http://localhost:8080/v2/api/accounts/login";
+
+  url += "?username=" + username + "&password=" + password;
+  $.ajax({
+    url: url,
+    type: "GET",
+    success: function (result) {
+      $(".header").load("header.html");
+    },
+    error: function (data, status) {
+      console.log("status =" + status + " " + JSON.stringify(data));
+      alert(data.responseJSON.message);
+    },
+  });
+}
 $(document).ready(function () {
-  $(".content-body").load("crud.html");
-
-  getData();
+  $(".header").load("login.html");
 
   $('[data-toggle="tooltip"]').tooltip();
   var actions = $("table td:last-child").html();
@@ -29,46 +70,41 @@ $(document).ready(function () {
         departmentName,
         positionName,
         createDate;
-      var index = 1;
-      input.each(function () {
+      input.each(function (index) {
         let value = $(this).val();
         $(this).parent("td").html(value);
         switch (index) {
-          case 1: {
+          case 0: {
             id = value;
             break;
           }
-          case 2: {
+          case 1: {
             email = value;
             break;
           }
-          case 3: {
+          case 2: {
             username = value;
             break;
           }
-          case 4: {
+          case 3: {
             fullName = value;
             break;
           }
-          case 5: {
+          case 4: {
             departmentName = value;
             break;
           }
-          case 6: {
+          case 5: {
             positionName = value;
             break;
           }
-          case 7: {
+          case 6: {
             createDate = value;
             break;
           }
         }
         index++;
       });
-
-      console.log(
-        `email : ${email}, username : ${username}, fullName: ${fullName}, departmentName :${departmentName}, positionName:${positionName}, createDate : ${createDate}`
-      );
       if (addNew == false) {
         updateAccount(
           id,
@@ -77,6 +113,7 @@ $(document).ready(function () {
           fullName,
           departmentName,
           positionName,
+          role,
           createDate
         );
       } else {
@@ -88,6 +125,7 @@ $(document).ready(function () {
           fullName,
           departmentName,
           positionName,
+          role,
           createDate
         );
       }
@@ -96,48 +134,37 @@ $(document).ready(function () {
     }
   });
 
-  // Edit row on edit button click
   $(document).on("click", ".edit", function () {
-    $(this)
-      .parents("tr")
-      .find("td:not(:last-child)")
-      .each(function () {
-        $(this).html(
-          '<input type="text" class="form-control" value="' +
-            $(this).text() +
-            '">'
-        );
-      });
-    $(this).parents("tr").find(".add, .edit").toggle();
     $(".add-new").attr("disabled", "disabled");
   });
-  // Delete row on delete button click
+
   $(document).on("click", ".delete", function () {
     var idDelete = $(this).parents("tr").find("#td-id").text();
     deleteAccount(idDelete, $(this).parents("tr"));
   });
 });
-var accounts = [];
-var currentPage = 1;
-var size = 5;
+
+/******* GET DATA  *********/
 function getData() {
   var url = "http://localhost:8080/v2/api/accounts";
 
   url += "?page=" + currentPage + "&size=" + size;
-
-  $.get(url, function (data, status) {
-    accounts = [];
-
-    if (status == "error") {
+  $.ajax({
+    url: url,
+    type: "GET",
+    contentType: "application/json",
+    headers: { Authorization: "Basic " + btoa(username + ":" + password) },
+    success: function (data, status, xhr) {
+      accounts = data.content;
+      fillAccountToTable();
+      pagingTable(data.totalPages);
+    },
+    error: function (data, status) {
       alert("Error when loading data");
-      return;
-    }
-    accounts = data.content;
-    fillAccountToTable();
-    // resetDeleteCheckbox();
-    pagingTable(data.totalPages);
+    },
   });
 }
+/******* GET DATA  *********/
 function pagingTable(pageAmount) {
   var pagingStr = "";
 
@@ -171,6 +198,14 @@ function pagingTable(pageAmount) {
   $("#pagination").empty();
   $("#pagination").append(pagingStr);
 }
+function onClickSearchButton() {
+  resetPaging();
+  buildTable();
+}
+
+function resetSearch() {
+  document.getElementById("searchInput").value = "";
+}
 
 function resetPaging() {
   currentPage = 1;
@@ -195,22 +230,12 @@ function changePage(page) {
   currentPage = page;
   buildTable();
 }
-// function resetDeleteCheckbox() {
 
-//   document.getElementById("checkbox-all").checked = false;
+function getDepartment() {}
+function getPosition() {}
 
-//   var i = 0;
-//   while (true) {
-//       var checkboxItem = document.getElementById("checkbox-" + i);
-//       if (checkboxItem !== undefined && checkboxItem !== null) {
-//           checkboxItem.checked = false;
-//           i++;
-//       } else {
-//           break;
-//       }
-//   }
-// }
 function fillAccountToTable() {
+  $("tbody").empty();
   accounts.forEach(function (item, index) {
     $("tbody").append(
       "<tr>" +
@@ -240,10 +265,13 @@ function fillAccountToTable() {
         item.createDate +
         "</td>" +
         "<td>" +
+        '<a class="add" title="Add" data-toggle="tooltip" onclick="openUpdateModal(' +
+        item.id +
+        ')"><i class="material-icons">&#xE03B;</i></a>' +
         '<a class="edit" title="Edit" data-toggle="tooltip" onclick="openUpdateModal(' +
         item.id +
         ')"><i class="material-icons">&#xE254;</i></a>' +
-        '<a class="delete" title="Delete" data-toggle="tooltip" onClick="openConfirmDelete(' +
+        '<a class="delete" title="Delete" data-toggle="tooltip"(' +
         item.id +
         ')"><i class="material-icons">&#xE872;</i></a>' +
         "</td>" +
@@ -251,6 +279,7 @@ function fillAccountToTable() {
     );
   });
 }
+
 function buildTable() {
   $("tbody").empty();
   getData();
@@ -266,6 +295,14 @@ function resetFormAdd() {
   document.getElementById("email").value = "";
   document.getElementById("username").value = "";
   document.getElementById("fullname").value = "";
+  document.getElementById("role").value = "";
+  document.getElementById("role").style.display = "block";
+  document.getElementById("labelRole").style.display = "block";
+  var button = document.getElementById("saveAccount");
+  button.innerHTML = "save";
+  button.onclick = function () {
+    save();
+  };
 }
 function openModal() {
   $("#myModal").modal("show");
@@ -281,23 +318,26 @@ function deleteAccount(id, elementTr) {
   $.ajax({
     url: "http://localhost:8080/v2/api/accounts/" + id,
     type: "DELETE",
+    headers: { Authorization: "Basic " + btoa(username + ":" + password) },
     success: function (result) {
-      // error
       if (result == undefined || result == null) {
         alert("Error when loading data");
         return;
       }
-
-      // success
       elementTr.remove();
-      alert("Delete thanh cong");
+      alert("Delete thành công");
       resetPaging();
       buildTable();
+    },
+    error: function (data, status) {
+      if (data.status == 403) {
+        alert("Tài khoản không có quyền xoá");
+      }
     },
   });
 }
 
-// su ly su kien xoa nhieu checkbox
+// Xử lý sự kiện xoá nhiều checkbox
 var listIdDelette = [];
 function onChangeCheckboxItem(checkbox, id) {
   var value = checkbox.checked;
@@ -317,13 +357,12 @@ function onChangeCheckboxAll() {
   listIdDelette = [];
   var value = document.getElementById("checkbox-all").checked;
   console.log("CheckAll +" + value);
-  // tao mang id xoa
+  // tạo mảng id xoá
   if (value) {
     accounts.forEach((element) => {
       listIdDelette.push(element.id);
     });
   }
-  // check all item
   for (let i = 0; ; i++) {
     var checkboxItem = document.getElementById("checkbox-" + i);
     if (checkboxItem !== undefined && checkboxItem !== null) {
@@ -342,6 +381,7 @@ function deleteAllAccount() {
   $.ajax({
     url: "http://localhost:8080/v2/api/accounts?ids=" + listIdDelette,
     type: "DELETE",
+    headers: { Authorization: "Basic " + btoa(username + ":" + password) },
     success: function (result) {
       // error
       if (result == undefined || result == null) {
@@ -357,40 +397,25 @@ function deleteAllAccount() {
 }
 /******* DELETE  *********/
 
-function updateAccount(
-  id,
-  email,
-  username,
-  fullName,
-  departmentName,
-  positionName,
-  createDate
-) {
-  console.log(
-    `new data = ${id} , ${email}, ${username}, ${fullName}, ${departmentName}, ${positionName}, ${createDate}`
-  );
-  $.ajax({
-    url: "http://localhost:8080/v2/api/accounts/" + id,
-    type: "PUT",
-    contentType: "application/json",
-    data: `{"email":"${email}","username":"${username}","fullName":"${fullName}", "departmentName" :"${departmentName}", "positionName":"${positionName}", "createDate": "${createDate}"}`,
-    success: function (listData, status, xhr) {
-      console.log("Update thành công");
-    },
-  });
-}
-
 /******* CREATE ACCOUNT  *********/
 
-function createAccount(email, username, fullName, departmentId, positionId) {
+function createAccount(
+  email,
+  user_name,
+  fullName,
+  departmentId,
+  positionId,
+  role
+) {
   console.log(
-    `new data =  ${email}, ${username}, ${fullName}, ${departmentId}, ${positionId}`
+    `new data =  ${email}, ${user_name}, ${fullName}, ${departmentId}, ${positionId}, ${role}`
   );
   $.ajax({
     url: "http://localhost:8080/v2/api/accounts",
     type: "POST",
+    headers: { Authorization: "Basic " + btoa(username + ":" + password) },
     contentType: "application/json",
-    data: `{"email":"${email}","username":"${username}","fullName":"${fullName}", "departmentId" :"${departmentId}", "positionId":"${positionId}"}`,
+    data: `{"email":"${email}","username":"${user_name}","fullName":"${fullName}", "departmentId" :"${departmentId}", "positionId":"${positionId}","role":"${role}"}`,
     success: function (listData, status, xhr) {
       if (status == "success") {
         alert("Create thành công");
@@ -401,7 +426,7 @@ function createAccount(email, username, fullName, departmentId, positionId) {
     error: function (data, status, xhr) {
       console.log(JSON.stringify(data));
       console.log(status + " <==>" + JSON.stringify(xhr));
-      alert("Create that bai: " + JSON.stringify(data));
+      alert("Create thất bại : " + JSON.stringify(data));
     },
   });
 }
@@ -417,159 +442,132 @@ function save() {
   var positionSl = document.getElementById("positionSelect");
   var positionID = positionSl.options[positionSl.selectedIndex].value;
 
-  createAccount(email, username, fullname, departmentID, positionID);
+  var role = document.getElementById("role").value;
+
+  createAccount(email, username, fullname, departmentID, positionID, role);
 }
 /******* CREATE ACCOUNT  *********/
-function addAccount() {
-  // get data
-  var username = document.getElementById("username").value;
 
-  // validate name 6 -> 30 characters
-  if (!username || username.length < 6 || username.length > 30) {
-    // show error message
-    showNameErrorMessage("Account name must be from 6 to 30 characters!");
-    return;
-  }
+/******* UPDATE ACCOUNT  *********/
 
-  // validate unique name
-  $.get(
-    "http://localhost:8080/v2/api/accounts/" + username + "/exists",
-    function (data, status) {
-      // error
-      if (status == "error") {
-        // TODO
-        alert("Error when loading data");
-        return;
-      }
-
-      if (data) {
-        // show error message
-        showNameErrorMessage("Account username is exists!");
-      } else {
-        // call api create department
-        var account = {};
-
-        $.ajax({
-          url: "http://localhost:8080/v2/api/accounts",
-          type: "POST",
-          data: JSON.stringify(account), // body
-          contentType: "application/json", // type of body (json, xml, text)
-          // dataType: 'json', // datatype return
-          success: function (data, textStatus, xhr) {
-            console.log(data);
-            // success
-            hideModal();
-            showSuccessAlert();
-            buildTable();
-          },
-          error(jqXHR, textStatus, errorThrown) {
-            alert("Error when loading data");
-            console.log(jqXHR);
-            console.log(textStatus);
-            console.log(errorThrown);
-          },
-        });
+function updateAccount(
+  id,
+  email,
+  user_name,
+  fullname,
+  departmentName,
+  positionName
+) {
+  document.getElementById("id").value = id;
+  document.getElementById("username").value = user_name;
+  document.getElementById("fullname").value = fullname;
+  document.getElementById("email").value = email;
+  var dpSelect = document.getElementsById("departmentSelect");
+  console.log(JSON.stringify(dpSelect.options));
+  for (let i = 0; dpSelect.options.length; i++) {
+    if (dpSelect.options[i] != undefined) {
+      let v = dpSelect.options[i].value;
+      if (v == departmentName) {
+        dpSelect.options[i].selected = true;
       }
     }
-  );
+  }
+
+  var poSelect = document.getElementsById("positionSelect");
+  for (let i = 0; poSelect.options.length; i++) {
+    if (poSelect.options[i] != undefined) {
+      let v = poSelect.options[i].value;
+      if (v == positionName) {
+        poSelect.options[i].selected = true;
+      }
+    }
+  }
+
+  openModal();
+}
+
+function openUpdateModal(id) {
+  resetFormUpdate();
+  $(".add-new").attr("disabled", "disabled");
+  $.ajax({
+    url: "http://localhost:8080/v2/api/accounts/" + id,
+    type: "GET",
+    contentType: "application/json",
+    headers: { Authorization: "Basic " + btoa(username + ":" + password) },
+    success: function (data, status, xhr) {
+      openModal();
+
+      document.getElementById("titleModal").innerHTML = "Update Account";
+      document.getElementById("username").value = data.username;
+      document.getElementById("fullname").value = data.fullName;
+      document.getElementById("email").value = data.email;
+
+      $("#departmentSelect option").each(function () {
+        var t = $(this).text();
+        if (
+          t.toLowerCase().trim() == data.departmentName.toLowerCase().trim()
+        ) {
+          $(this).prop("selected", true);
+          return false;
+        }
+      });
+
+      $.each($("#positionSelect option"), function () {
+        var t = $(this).text();
+        if (t.toLowerCase().trim() == data.positionName.toLowerCase().trim()) {
+          $(this).prop("selected", true);
+          return false;
+        }
+      });
+
+      var button = document.getElementById("saveAccount");
+      button.innerHTML = "Update";
+      button.onclick = function () {
+        updateAccount(id);
+      };
+    },
+    error: function (data, status) {
+      alert("Error when loading data");
+    },
+  });
+}
+function updateAccount(id) {
+  var user_name = document.getElementById("username").value;
+  var fullname = document.getElementById("fullname").value;
+  var email = document.getElementById("email").value;
+  var selectorDepartment = document.getElementById("departmentSelect");
+  var departmentID =
+    selectorDepartment.options[selectorDepartment.selectedIndex].value;
+
+  var positionSl = document.getElementById("positionSelect");
+  var positionID = positionSl.options[positionSl.selectedIndex].value;
+
+  $.ajax({
+    url: "http://localhost:8080/v2/api/accounts/" + id,
+    type: "PUT",
+    headers: { Authorization: "Basic " + btoa(username + ":" + password) },
+    contentType: "application/json",
+    data: `{"email":"${email}","username":"${user_name}","fullName":"${fullname}", "departmentId" :"${departmentID}", "positionId":"${positionID}"}`,
+    success: function (listData, status, xhr) {
+      if (status == "success") {
+        alert("Update thành công");
+        getData();
+        hideModal();
+      }
+    },
+    error: function (data, status) {
+      alert("Update không thành công");
+    },
+  });
+  $(".add-new").removeAttr("disabled");
 }
 function resetFormUpdate() {
   document.getElementById("titleModal").innerHTML = "Update Account";
-  document.getElementById("authorLabel").style.display = "block";
-  document.getElementById("author").style.display = "block";
-  document.getElementById("createdDateLabel").style.display = "block";
-  document.getElementById("createdDate").style.display = "block";
-  hideNameErrorMessage();
+  document.getElementById("email").value = "";
+  document.getElementById("username").value = "";
+  document.getElementById("fullname").value = "";
+  document.getElementById("role").value = "";
+  document.getElementById("role").style.display = "none";
+  document.getElementById("labelRole").style.display = "none";
 }
-var oldName;
-
-function openUpdateModal(id) {
-  $.get("http://localhost:8080/v2/api/accounts/" + id, function (data, status) {
-    // error
-    if (status == "error") {
-      // TODO
-      alert("Error when loading data");
-      return;
-    }
-
-    // success
-    openModal();
-    resetFormUpdate();
-
-    oldName = data.name;
-
-    // fill data
-    document.getElementById("id").value = data.id;
-    document.getElementById("email").value = data.email;
-    document.getElementById("username").value = data.username;
-    document.getElementById("fullName").value = data.fullName;
-    document.getElementById("departmentName").value = data.departmentName;
-    document.getElementById("positionName").value = data.positionName;
-    document.getElementById("createDate").value = data.createDate;
-  });
-}
-
-/*
-function createTable(listData) {
-  console.log(JSON.stringify(listData));
-  var tBodyData = "";
-
-  listData.forEach((element) => {
-    let dpName = element.departmentName != null ? element.departmentName : null;
-
-    let poName = element.positionName != null ? element.positionName : null;
-    tBodyData += "<tr>";
-    tBodyData += `<td id="td-id" style = "display:none">${element.id}</td>`;
-    tBodyData += `<td>${element.email}</td>`;
-    tBodyData += `<td>${element.username}</td>`;
-    tBodyData += `<td>${element.fullName}</td>`;
-    tBodyData += `<td>${dpName}</td>`;
-    tBodyData += `<td>${poName}</td>`;
-    tBodyData += `<td>${element.createDate}</td>`;
-    tBodyData += `<td>
-      <a class="add" title="Add" data-toggle="tooltip">
-        <i class="material-icons">&#xE03B;</i>
-      </a>
-      <a class="edit" title="Edit" data-toggle="tooltip">
-        <i class="material-icons">&#xE254;</i>
-      </a>
-      <a class="delete" title="Delete" data-toggle="tooltip">
-        <i class="material-icons">&#xE872;</i></a>
-      </td>`;
-    tBodyData += "</tr>";
-  });
-
-  $("tbody").html(tBodyData);
-}*/
-
-function ClickAdd() {
-  console.log("click buttonAdd");
-  addNew = true;
-  $(this).attr("disabled", "disabled");
-  var index = $("table tbody tr:last-child").index();
-  var row =
-    "<tr>" +
-    '<td style ="display: none"><input type="text" class="form-control" value="1"></td>' +
-    '<td><input type="text" class="form-control" name="email" id="email"></td>' +
-    '<td><input type="text" class="form-control" name="userName" id="username"></td>' +
-    '<td><input type="text" class="form-control" name="fullName" id="fullName"></td>' +
-    '<td><input type="text" class="form-control" name="departmentName" id="departmentName"></td>' +
-    '<td><input type="text" class="form-control" name="positionName" id="positionName"></td>' +
-    `<td>
-              <a class="add" title="Add" data-toggle="tooltip">
-                <i class="material-icons">&#xE03B;</i>
-              </a>
-              <a class="edit" title="Edit" data-toggle="tooltip">
-                <i class="material-icons">&#xE254;</i>
-              </a>
-              <a class="delete" title="Delete" data-toggle="tooltip">
-                <i class="material-icons">&#xE872;</i></a>
-              </td>` +
-    "</tr>";
-  $("table").append(row);
-  $("table tbody tr")
-    .eq(index + 1)
-    .find(".add, .edit")
-    .toggle();
-  //$('[data-toggle="tooltip"]').tooltip();
-}
+/******* UPDATE ACCOUNT  *********/

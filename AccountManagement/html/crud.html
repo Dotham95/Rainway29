@@ -31,7 +31,9 @@
             placeholder="Search for account username or email..."
             title="Type in a name"
           />
-          <button type="button" onclick="handleSearch()">Search</button>
+          <div id="button-search">
+            <button type="button" onclick="handleSearch()">Search</button>
+          </div>
         </div>
       </div>
 
@@ -46,7 +48,7 @@
                 onclick="onChangeCheckboxAll()"
               />
             </th>
-            <th>Email</th>
+            <th>Email <i class="fa fa-angle-down ml-2 opacity-8"></i></th>
             <th>UserName</th>
             <th>FullName</th>
             <th>Department</th>
@@ -144,7 +146,26 @@
               <option value="4">PM</option>
             </select>
             <p></p>
-
+            <label for="name" id="labelRole"><b>Role</b></label
+            ><br />
+            <input
+              type="text"
+              placeholder="Enter your role"
+              name="name"
+              id="role"
+              required
+            />
+            <p></p>
+            <!-- <label for="name"><b>Password</b></label
+            ><br />
+            <input
+              type="text"
+              placeholder="Enter your password"
+              name="name"
+              id="password"
+              required
+            />
+            <p></p> -->
             <!-- <label for="createdDate" id="createdDateLabel"
               ><b>Create Date</b></label
             ><br /> -->
@@ -157,7 +178,12 @@
           <button type="button" class="btn btn-secondary" data-dismiss="modal">
             Cancel
           </button>
-          <button type="button" class="btn btn-primary" onclick="save()">
+          <button
+            type="button"
+            class="btn btn-primary"
+            id="saveAccount"
+            onclick="save()"
+          >
             Save
           </button>
         </div>
