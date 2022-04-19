@@ -1,4 +1,4 @@
-package com.vti.entity;
+package com.vti.dto;
 
 public class DTOCodeMessage {
 	public static final int ERROR_CODE_100 = 100;

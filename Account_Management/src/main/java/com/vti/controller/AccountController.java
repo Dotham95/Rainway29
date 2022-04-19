@@ -27,10 +27,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.vti.dto.AccountDTO;
 import com.vti.entity.Account;
 import com.vti.entity.exception.LoginException;
-import com.vti.entity.form.LoginForm;
-import com.vti.entity.form.UpdateForm;
 import com.vti.entity.filter.AccountFillter;
 import com.vti.entity.form.CreateAccountForm;
+import com.vti.entity.form.UpdateForm;
 import com.vti.service.IAccountService;
 
 @RestController
@@ -47,10 +46,9 @@ public class AccountController {
 	}
 
 	@GetMapping
-	public Page<AccountDTO> getAllAccounts(Pageable pageable, AccountFillter fillter,
-			@RequestParam(name = "search", required = false) String search) {
+	public Page<AccountDTO> getAllAccounts(Pageable pageable, AccountFillter fillter) {
 
-		Page<Account> entityPages = acService.getAll(pageable, fillter, search);
+		Page<Account> entityPages = acService.getAll(pageable, fillter);
 		List<AccountDTO> listAccountDTOs = modelMapper.map(entityPages.getContent(), new TypeToken<List<AccountDTO>>() {
 		}.getType());
 		Page<AccountDTO> pageAccountDTO = new PageImpl<>(listAccountDTOs, pageable, entityPages.getTotalElements());
@@ -72,7 +70,8 @@ public class AccountController {
 	}
 
 	@GetMapping(value = "/login")
-	public AccountDTO login(com.vti.entity.form.LoginForm form) throws LoginException, javax.security.auth.login.LoginException {
+	public AccountDTO login(com.vti.entity.form.LoginForm form)
+			throws LoginException, javax.security.auth.login.LoginException {
 		Account entity = acService.login(form);
 		AccountDTO dto = modelMapper.map(entity, AccountDTO.class);
 		return dto;

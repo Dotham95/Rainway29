@@ -6,7 +6,7 @@ import javax.validation.constraints.Positive;
 
 import org.hibernate.validator.constraints.Length;
 
-import com.vti.entity.DTOCodeMessage;
+import com.vti.dto.DTOCodeMessage;
 import com.vti.entity.config.DepartmentNotExists;
 
 import lombok.Data;

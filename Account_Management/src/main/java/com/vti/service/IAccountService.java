@@ -15,7 +15,7 @@ import com.vti.entity.form.LoginForm;
 import com.vti.entity.form.UpdateForm;
 
 public interface IAccountService extends UserDetailsService {
-	public Page<Account> getAll(Pageable pageable, AccountFillter filter, String search);
+	public Page<Account> getAll(Pageable pageable, AccountFillter filter);
 
 	public Account getAccountById(int id);
 

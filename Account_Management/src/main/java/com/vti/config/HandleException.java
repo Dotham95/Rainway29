@@ -15,7 +15,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.vti.dto.ResponseDTO;
-import com.vti.entity.DTOCodeMessage;
+import com.vti.dto.DTOCodeMessage;
 
 @ControllerAdvice
 public class HandleException extends ResponseEntityExceptionHandler {
