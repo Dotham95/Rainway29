@@ -4,6 +4,7 @@ var password = "";
 var accounts = [];
 var currentPage = 1;
 var size = 5;
+var search = "";
 var arrayDepartment = [];
 var arrayPosition = [];
 
@@ -18,13 +19,16 @@ function clickNavHome() {
 }
 
 function clickNavViewListAccounts() {
+  search = null;
   $(".main").load("crud.html", function () {
-    buildTable();
+    // buildTableAccount();
+    getDataAccount();
+    getDepartment();
+    getPosition();
   });
 }
-function clickNavlogout() {
-  $(".main").load("home.html");
-}
+
+/******* LOGIN *********/
 function login() {
   username = $("#username").val();
   password = $("#password").val();
@@ -36,6 +40,10 @@ function login() {
     type: "GET",
     success: function (result) {
       $(".header").load("header.html");
+      getDepartment();
+      getPosition();
+      localStorage.setItem("username", username);
+      localStorage.setItem("password", password);
     },
     error: function (data, status) {
       console.log("status =" + status + " " + JSON.stringify(data));
@@ -48,107 +56,111 @@ $(document).ready(function () {
 
   $('[data-toggle="tooltip"]').tooltip();
   var actions = $("table td:last-child").html();
+});
+/******* LOGIN *********/
 
-  $(document).on("click", ".add", function () {
-    var empty = false;
-    var input = $(this).parents("tr").find('input[type="text"]');
-    input.each(function () {
-      if (!$(this).val()) {
-        $(this).addClass("error");
-        empty = true;
-      } else {
-        $(this).removeClass("error");
+/******* LOGOUT *********/
+$(document).on("click", "#logout", function () {
+  username = "";
+  password = "";
+  $(".header").empty();
+  $(".main").empty();
+  $(".header").load("login.html");
+});
+/******* LOGOUT *********/
+
+/******* ONCLICK ADD *********/
+$(document).on("click", ".add", function () {
+  var empty = false;
+  var input = $(this).parents("tr").find('input[type="text"]');
+  input.each(function () {
+    if (!$(this).val()) {
+      $(this).addClass("error");
+      empty = true;
+    } else {
+      $(this).removeClass("error");
+    }
+  });
+  $(this).parents("tr").find(".error").first().focus();
+
+  if (!empty) {
+    var id, email, username, fullName, departmentName, positionName, createDate;
+    input.each(function (index) {
+      let value = $(this).val();
+      $(this).parent("td").html(value);
+      switch (index) {
+        case 0: {
+          id = value;
+          break;
+        }
+        case 1: {
+          email = value;
+          break;
+        }
+        case 2: {
+          username = value;
+          break;
+        }
+        case 3: {
+          fullName = value;
+          break;
+        }
+        case 4: {
+          departmentName = value;
+          break;
+        }
+        case 5: {
+          positionName = value;
+          break;
+        }
+        case 6: {
+          createDate = value;
+          break;
+        }
       }
+      index++;
     });
-    $(this).parents("tr").find(".error").first().focus();
-
-    if (!empty) {
-      var id,
+    if (addNew == false) {
+      //todo
+    } else {
+      addNew = false;
+      createAccount(
+        id,
         email,
         username,
         fullName,
         departmentName,
         positionName,
-        createDate;
-      input.each(function (index) {
-        let value = $(this).val();
-        $(this).parent("td").html(value);
-        switch (index) {
-          case 0: {
-            id = value;
-            break;
-          }
-          case 1: {
-            email = value;
-            break;
-          }
-          case 2: {
-            username = value;
-            break;
-          }
-          case 3: {
-            fullName = value;
-            break;
-          }
-          case 4: {
-            departmentName = value;
-            break;
-          }
-          case 5: {
-            positionName = value;
-            break;
-          }
-          case 6: {
-            createDate = value;
-            break;
-          }
-        }
-        index++;
-      });
-      if (addNew == false) {
-        updateAccount(
-          id,
-          email,
-          username,
-          fullName,
-          departmentName,
-          positionName,
-          role,
-          createDate
-        );
-      } else {
-        addNew = false;
-        createAccount(
-          id,
-          email,
-          username,
-          fullName,
-          departmentName,
-          positionName,
-          role,
-          createDate
-        );
-      }
-      $(this).parents("tr").find(".add, .edit").toggle();
-      $(".add-new").removeAttr("disabled");
+        role,
+        createDate
+      );
     }
-  });
+    $(this).parents("tr").find(".add, .edit").toggle();
+    $(".add-new").removeAttr("disabled");
+  }
+});
+/******* ONCLICK ADD *********/
 
-  $(document).on("click", ".edit", function () {
-    $(".add-new").attr("disabled", "disabled");
-  });
-
-  $(document).on("click", ".delete", function () {
-    var idDelete = $(this).parents("tr").find("#td-id").text();
-    deleteAccount(idDelete, $(this).parents("tr"));
-  });
+/******* ONCLICK DELETE *********/
+$(document).on("click", ".delete", function () {
+  var idDelete = $(this).parents("tr").find("#td-id").text();
+  deleteAccount(idDelete, $(this).parents("tr"));
 });
 
-/******* GET DATA  *********/
-function getData() {
+/******* GET DATA ACCOUNT  *********/
+function getDataAccount(sortEmail, sortUser) {
   var url = "http://localhost:8080/v2/api/accounts";
 
   url += "?page=" + currentPage + "&size=" + size;
+  if (sortEmail != undefined && sortEmail != "") {
+    url += "&sort=email," + sortEmail;
+  }
+  if (sortUser != undefined && sortUser != "") {
+    url += "&sort=username," + sortUser;
+  }
+  if (search) {
+    url += "&userName=" + search;
+  }
   $.ajax({
     url: url,
     type: "GET",
@@ -157,15 +169,111 @@ function getData() {
     success: function (data, status, xhr) {
       accounts = data.content;
       fillAccountToTable();
-      pagingTable(data.totalPages);
+      pagingTableAccount(data.totalPages);
     },
     error: function (data, status) {
       alert("Error when loading data");
     },
   });
 }
-/******* GET DATA  *********/
-function pagingTable(pageAmount) {
+/******* SORT ACCOUNT  *********/
+var sort = "asc";
+function sortAccountByEmail() {
+  if (sort == "asc") {
+    getDataAccount(sort);
+    sort = "desc";
+  } else {
+    getDataAccount(sort);
+    sort = "asc";
+  }
+}
+function sortAccountByUsername() {
+  if (sort == "asc") {
+    getDataAccount("", sort);
+    sort = "desc";
+  } else {
+    getDataAccount("", sort);
+    sort = "asc";
+  }
+}
+/******* FILL DATA ACCOUNT  *********/
+function fillAccountToTable() {
+  $("tbody").empty();
+  $;
+  accounts.forEach(function (item, index) {
+    $("tbody").append(
+      "<tr>" +
+        '<td><input id="checkbox-' +
+        index +
+        '"' +
+        `type="checkbox" onClick="onChangeCheckboxItem(this ,${item.id})"></td>` +
+        '<td id="td-id" style = "display:none">' +
+        item.id +
+        "</td>" +
+        "<td>" +
+        item.email +
+        "</td>" +
+        "<td>" +
+        item.username +
+        "</td>" +
+        "<td>" +
+        item.fullName +
+        "</td>" +
+        "<td>" +
+        item.departmentName +
+        "</td>" +
+        "<td>" +
+        item.positionName +
+        "</td>" +
+        "<td>" +
+        item.createDate +
+        "</td>" +
+        "<td>" +
+        '<a class="edit" title="Edit" data-toggle="tooltip" onclick="editAccount(this)">' +
+        '<i class="material-icons">&#xE254;</i>' +
+        "</a>" +
+        '<a class="delete" title="Delete" data-toggle="tooltip"(' +
+        item.id +
+        ')"><i class="material-icons">&#xE872;</i></a>' +
+        "</td>" +
+        "</tr>"
+    );
+  });
+}
+/******* ONCLICK EDIT *********/
+function editAccount(buttonEdit) {
+  var id, user_name, email, fullname, departmentName, positionName;
+  $(buttonEdit)
+    .parents("tr")
+    .find("td:not(:last-child)")
+    .each(function (index) {
+      switch (index) {
+        case 1:
+          id = $(this).text();
+          break;
+        case 2:
+          email = $(this).text();
+          break;
+        case 3:
+          user_name = $(this).text();
+          break;
+        case 4:
+          fullname = $(this).text();
+          break;
+        case 5:
+          departmentName = $(this).text();
+          break;
+        case 6:
+          positionName = $(this).text();
+          break;
+      }
+    });
+
+  updateAccount(id, email, user_name, fullname, departmentName, positionName);
+}
+/******* ONCLICK EDIT *********/
+/******* PAGING ACCOUNT *********/
+function pagingTableAccount(pageAmount) {
   var pagingStr = "";
 
   if (pageAmount > 1 && currentPage > 1) {
@@ -198,14 +306,6 @@ function pagingTable(pageAmount) {
   $("#pagination").empty();
   $("#pagination").append(pagingStr);
 }
-function onClickSearchButton() {
-  resetPaging();
-  buildTable();
-}
-
-function resetSearch() {
-  document.getElementById("searchInput").value = "";
-}
 
 function resetPaging() {
   currentPage = 1;
@@ -228,62 +328,66 @@ function changePage(page) {
   }
   resetCheckBoxAll();
   currentPage = page;
-  buildTable();
+  buildTableAccount();
 }
 
-function getDepartment() {}
-function getPosition() {}
-
-function fillAccountToTable() {
+/******* PAGING  *********/
+/******* BUILD DATA  *********/
+function buildTableAccount() {
   $("tbody").empty();
-  accounts.forEach(function (item, index) {
-    $("tbody").append(
-      "<tr>" +
-        '<td><input id="checkbox-' +
-        index +
-        '"' +
-        `type="checkbox" onClick="onChangeCheckboxItem(this ,${item.id})"></td>` +
-        '<td id="td-id" style = "display:none">' +
-        item.id +
-        "</td>" +
-        "<td>" +
-        item.email +
-        "</td>" +
-        "<td>" +
-        item.username +
-        "</td>" +
-        "<td>" +
-        item.fullName +
-        "</td>" +
-        "<td>" +
-        item.departmentName +
-        "</td>" +
-        "<td>" +
-        item.positionName +
-        "</td>" +
-        "<td>" +
-        item.createDate +
-        "</td>" +
-        "<td>" +
-        '<a class="add" title="Add" data-toggle="tooltip" onclick="openUpdateModal(' +
-        item.id +
-        ')"><i class="material-icons">&#xE03B;</i></a>' +
-        '<a class="edit" title="Edit" data-toggle="tooltip" onclick="openUpdateModal(' +
-        item.id +
-        ')"><i class="material-icons">&#xE254;</i></a>' +
-        '<a class="delete" title="Delete" data-toggle="tooltip"(' +
-        item.id +
-        ')"><i class="material-icons">&#xE872;</i></a>' +
-        "</td>" +
-        "</tr>"
-    );
+  getDataAccount();
+}
+/******* GET DEPARTMENT  *********/
+function getDepartment() {
+  $.ajax({
+    url: "http://localhost:8080/v2/api/departments?size=20",
+    type: "GET",
+    headers: { Authorization: "Basic " + btoa(username + ":" + password) },
+    success: function (result) {
+      arrayDepartment = result.content;
+      fillDerpartmentToTable(arrayDepartment);
+    },
+    error: function (data, status) {
+      console.log("status = " + status + "  " + JSON.stringify(data));
+      alert(data.responseJSON.message);
+    },
+  });
+}
+function fillDerpartmentToTable(arrayDp) {
+  $("#departmentSelect").empty();
+  var text = "";
+  arrayDp.forEach((element) => {
+    text += `<option value="${element.id}">${element.name}</option>`;
+  });
+  $("#departmentSelect").html(text);
+}
+/******* GET POSITION  *********/
+function getPosition() {
+  $.ajax({
+    url: "http://localhost:8080/v2/api/positions",
+    type: "GET",
+    headers: { Authorization: "Basic " + btoa(username + ":" + password) },
+    success: function (result) {
+      arrayPosition = result.content;
+      fillPositionToTable(arrayPosition);
+    },
+    error: function (data, status) {
+      console.log("status = " + status + "  " + JSON.stringify(data));
+      alert(data.responseJSON.message);
+    },
   });
 }
 
-function buildTable() {
-  $("tbody").empty();
-  getData();
+function fillPositionToTable(arrayPo) {
+  $("#positionSelect").empty();
+  var text = "";
+  arrayPo.forEach((element) => {
+    text += `<option value="${element.id}">${element.name}</option>`;
+  });
+  $("#positionSelect").html(text);
 }
+
+/******* AND NEW  *********/
 function openAddModal() {
   openModal();
   resetFormAdd();
@@ -295,15 +399,18 @@ function resetFormAdd() {
   document.getElementById("email").value = "";
   document.getElementById("username").value = "";
   document.getElementById("fullname").value = "";
-  document.getElementById("role").value = "";
-  document.getElementById("role").style.display = "block";
+  document.getElementById("roleSelect").value = "1";
+  document.getElementById("roleSelect").style.display = "block";
   document.getElementById("labelRole").style.display = "block";
+  document.getElementById("departmentSelect").value = "1";
+  document.getElementById("positionSelect").value = "1";
   var button = document.getElementById("saveAccount");
-  button.innerHTML = "save";
+  button.innerHTML = "Save";
   button.onclick = function () {
     save();
   };
 }
+
 function openModal() {
   $("#myModal").modal("show");
 }
@@ -312,7 +419,7 @@ function hideModal() {
   $("#myModal").modal("hide");
 }
 
-/******* DELETE  *********/
+/******* DELETE ACCOUNT  *********/
 function deleteAccount(id, elementTr) {
   console.log("id = " + id);
   $.ajax({
@@ -326,8 +433,8 @@ function deleteAccount(id, elementTr) {
       }
       elementTr.remove();
       alert("Delete thành công");
-      resetPaging();
-      buildTable();
+      resetTable();
+      buildTableAccount();
     },
     error: function (data, status) {
       if (data.status == 403) {
@@ -357,7 +464,6 @@ function onChangeCheckboxAll() {
   listIdDelette = [];
   var value = document.getElementById("checkbox-all").checked;
   console.log("CheckAll +" + value);
-  // tạo mảng id xoá
   if (value) {
     accounts.forEach((element) => {
       listIdDelette.push(element.id);
@@ -389,13 +495,12 @@ function deleteAllAccount() {
         return;
       }
       alert("Delete  Accouts + " + JSON.stringify(listIdDelette));
-      resetCheckBoxAll();
-      resetPaging();
-      buildTable();
+      resetTable();
+      buildTableAccount();
     },
   });
 }
-/******* DELETE  *********/
+/******* DELETE ACCOUNT *********/
 
 /******* CREATE ACCOUNT  *********/
 
@@ -419,14 +524,16 @@ function createAccount(
     success: function (listData, status, xhr) {
       if (status == "success") {
         alert("Create thành công");
-        getData();
         hideModal();
+        resetTable();
+        buildTableAccount();
       }
     },
     error: function (data, status, xhr) {
       console.log(JSON.stringify(data));
       console.log(status + " <==>" + JSON.stringify(xhr));
-      alert("Create thất bại : " + JSON.stringify(data));
+      console.log(data);
+      alert("Create thất bại : " + JSON.stringify(data.responseJSON.message));
     },
   });
 }
@@ -442,7 +549,8 @@ function save() {
   var positionSl = document.getElementById("positionSelect");
   var positionID = positionSl.options[positionSl.selectedIndex].value;
 
-  var role = document.getElementById("role").value;
+  var roleSl = document.getElementById("roleSelect");
+  var role = roleSl.options[roleSl.selectedIndex].value;
 
   createAccount(email, username, fullname, departmentID, positionID, role);
 }
@@ -458,80 +566,35 @@ function updateAccount(
   departmentName,
   positionName
 ) {
-  document.getElementById("id").value = id;
+  document.getElementById("titleModal").innerHTML = "Update Account";
   document.getElementById("username").value = user_name;
   document.getElementById("fullname").value = fullname;
   document.getElementById("email").value = email;
-  var dpSelect = document.getElementsById("departmentSelect");
-  console.log(JSON.stringify(dpSelect.options));
-  for (let i = 0; dpSelect.options.length; i++) {
-    if (dpSelect.options[i] != undefined) {
-      let v = dpSelect.options[i].value;
-      if (v == departmentName) {
-        dpSelect.options[i].selected = true;
-      }
+  document.getElementById("roleSelect").style.display = "none";
+  document.getElementById("labelRole").style.display = "none";
+  var button = document.getElementById("saveAccount");
+  button.innerHTML = "Update";
+  button.onclick = function () {
+    updateAccountSubmit(id);
+  };
+  $("#departmentSelect option").each(function () {
+    var t = $(this).text();
+    if (departmentName.toLowerCase().trim() == t.toLowerCase().trim()) {
+      $(this).prop("selected", true);
+      return false;
     }
-  }
-
-  var poSelect = document.getElementsById("positionSelect");
-  for (let i = 0; poSelect.options.length; i++) {
-    if (poSelect.options[i] != undefined) {
-      let v = poSelect.options[i].value;
-      if (v == positionName) {
-        poSelect.options[i].selected = true;
-      }
+  });
+  $("#positionSelect option").each(function () {
+    var s = $(this).text();
+    if (positionName.toLowerCase().trim() == s.toLowerCase().trim()) {
+      $(this).prop("selected", true);
+      return false;
     }
-  }
-
+  });
   openModal();
 }
 
-function openUpdateModal(id) {
-  resetFormUpdate();
-  $(".add-new").attr("disabled", "disabled");
-  $.ajax({
-    url: "http://localhost:8080/v2/api/accounts/" + id,
-    type: "GET",
-    contentType: "application/json",
-    headers: { Authorization: "Basic " + btoa(username + ":" + password) },
-    success: function (data, status, xhr) {
-      openModal();
-
-      document.getElementById("titleModal").innerHTML = "Update Account";
-      document.getElementById("username").value = data.username;
-      document.getElementById("fullname").value = data.fullName;
-      document.getElementById("email").value = data.email;
-
-      $("#departmentSelect option").each(function () {
-        var t = $(this).text();
-        if (
-          t.toLowerCase().trim() == data.departmentName.toLowerCase().trim()
-        ) {
-          $(this).prop("selected", true);
-          return false;
-        }
-      });
-
-      $.each($("#positionSelect option"), function () {
-        var t = $(this).text();
-        if (t.toLowerCase().trim() == data.positionName.toLowerCase().trim()) {
-          $(this).prop("selected", true);
-          return false;
-        }
-      });
-
-      var button = document.getElementById("saveAccount");
-      button.innerHTML = "Update";
-      button.onclick = function () {
-        updateAccount(id);
-      };
-    },
-    error: function (data, status) {
-      alert("Error when loading data");
-    },
-  });
-}
-function updateAccount(id) {
+function updateAccountSubmit(id) {
   var user_name = document.getElementById("username").value;
   var fullname = document.getElementById("fullname").value;
   var email = document.getElementById("email").value;
@@ -541,7 +604,6 @@ function updateAccount(id) {
 
   var positionSl = document.getElementById("positionSelect");
   var positionID = positionSl.options[positionSl.selectedIndex].value;
-
   $.ajax({
     url: "http://localhost:8080/v2/api/accounts/" + id,
     type: "PUT",
@@ -551,23 +613,45 @@ function updateAccount(id) {
     success: function (listData, status, xhr) {
       if (status == "success") {
         alert("Update thành công");
-        getData();
         hideModal();
+        resetTable();
+        buildTableAccount();
       }
     },
     error: function (data, status) {
       alert("Update không thành công");
     },
   });
-  $(".add-new").removeAttr("disabled");
 }
 function resetFormUpdate() {
   document.getElementById("titleModal").innerHTML = "Update Account";
   document.getElementById("email").value = "";
   document.getElementById("username").value = "";
   document.getElementById("fullname").value = "";
-  document.getElementById("role").value = "";
-  document.getElementById("role").style.display = "none";
+  document.getElementById("roleSelect").value = "";
+  document.getElementById("roleSelect").style.display = "none";
   document.getElementById("labelRole").style.display = "none";
 }
 /******* UPDATE ACCOUNT  *********/
+
+/******* SEARCH  *********/
+function Search() {
+  var s = document.getElementById("input-search-account").value;
+  if (search != s) {
+    search = s;
+    resetPaging();
+    resetCheckBoxAll();
+    buildTableAccount();
+  }
+}
+
+function resetTable() {
+  resetPaging();
+  resetSearch();
+  resetCheckBoxAll();
+}
+
+function resetSearch() {
+  document.getElementById("input-search-account").value = "";
+}
+/******* SEARCH  *********/

@@ -24,19 +24,15 @@
               <i class="fa fa-plus"></i>Delete All
             </button>
           </div>
-          <div>
+          <div class="search">
             <input
             type="text"
             id="input-search-account"
             placeholder="Search for account username ..."
             title="Type in a name"
-            style="width: 200%;border-radius: 10px; padding: 7px;"
+            style="width: 200%;border-radius: 10px; padding: 7px; "
           />
-         
-          <div id="button-search" style="border-radius: 30px; color:#337ab7;">
-            <button class="btn btn-secondary" type="button" onclick="Search()">
-              <i class="fa fa-search"></i>
-          </div>
+            <button class="btn btn-secondary fa fa-search" type="button" onclick="Search()">
           
         </div>
           </div>
@@ -46,7 +42,7 @@
       <table class="table table-bordered">
         <thead>
           <tr>
-            <th>
+            <th style="width: 8%;">
               <input
                 type="checkbox"
                 id="checkbox-all"
@@ -56,12 +52,13 @@
             </th>
             <th>
               Email
+              <i class="fa fa-sort" onclick="sortAccountByEmail()"></i>
             </th>
-            <th>UserName </th>
+            <th>UserName  <i class="fa fa-sort" onclick="sortAccountByUsername()"></i> </th>
             <th>FullName </th>
-            <th>Department </i></th>
-            <th>Position </i></th>
-            <th>CreateDate </i></th>
+            <th>Department </th>
+            <th>Position </th>
+            <th>CreateDate </th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -105,6 +102,7 @@
               name="name"
               id="username"
               required
+              style="width: 40%"
             />
             <p></p>
 
@@ -116,6 +114,7 @@
               name="name"
               id="fullname"
               required
+              style="width: 40%"
             />
             <p></p>
 
@@ -127,11 +126,12 @@
               name="name"
               id="email"
               required
+              style="width: 40%;"
             />
             <p></p>
             <label for="name"><b>Department</b></label
             ><br />
-            <select id="departmentSelect">
+            <select id="departmentSelect" style="width: 40%">
               <option value="1">Giám đốc</option>
               <option value="2">Phó giám đốc</option>
               <option value="3">Hành chính</option>
@@ -147,7 +147,7 @@
 
             <label for="name"><b>Position</b></label
             ><br />
-            <select id="positionSelect">
+            <select id="positionSelect" style="width: 40%">
               <option value="1">Dev</option>
               <option value="2">Test</option>
               <option value="3">ScrumMaster</option>
@@ -155,17 +155,15 @@
             </select>
             <p></p>
             <label for="name" id="labelRole"><b>Role</b></label
-            >
-            <input
-              type="text"
-              placeholder="Enter your role"
-              name="name"
-              id="role"
-              required
-            />
+              >
+              <select id="roleSelect" style="width: 40%,">
+                <option value="1">USER</option>
+                <option value="2">MANAGER</option>
+                <option value="3">ADMIN</option>
+              </select>
             <p></p>
           </div>
-        </div>
+        </div> 
 
         <!-- footer -->
         <div class="modal-footer">

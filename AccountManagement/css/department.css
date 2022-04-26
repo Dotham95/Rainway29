@@ -1,0 +1,31 @@
+
+   .searchDepartment{
+    display: flex;
+    margin-top: 5px;
+    width: 50%;
+  }
+  .btn{
+    border-radius: 30px; 
+    color:white; 
+    background-color:#337ab7; 
+    margin-left: 10px;
+  }
+  .table-title .add-new-department{
+    float: right;
+    height: 30px;
+    font-weight: bold;
+    font-size: 12px;
+    text-shadow: none;
+    min-width: 100px;
+    border-radius: 50px;
+    line-height: 13px;
+  }
+  .table-title .add-new i {
+    margin-right: 4px;
+  }
+  table.table td a.editD {
+    color: #ffc107;
+  }
+  table.table td a.deleteD {
+    color: #e34724;
+  }
