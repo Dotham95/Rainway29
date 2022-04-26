@@ -24,17 +24,23 @@
               <i class="fa fa-plus"></i>Delete All
             </button>
           </div>
-          <input
+          <div>
+            <input
             type="text"
-            onkeyup="handKeyUpEventForSearching(event)"
             id="input-search-account"
-            placeholder="Search for account username or email..."
+            placeholder="Search for account username ..."
             title="Type in a name"
+            style="width: 200%;border-radius: 10px; padding: 7px;"
           />
-          <div id="button-search">
-            <button type="button" onclick="handleSearch()">Search</button>
+         
+          <div id="button-search" style="border-radius: 30px; color:#337ab7;">
+            <button class="btn btn-secondary" type="button" onclick="Search()">
+              <i class="fa fa-search"></i>
           </div>
+          
         </div>
+          </div>
+          
       </div>
 
       <table class="table table-bordered">
@@ -48,12 +54,14 @@
                 onclick="onChangeCheckboxAll()"
               />
             </th>
-            <th>Email <i class="fa fa-angle-down ml-2 opacity-8"></i></th>
-            <th>UserName</th>
-            <th>FullName</th>
-            <th>Department</th>
-            <th>Position</th>
-            <th>CreateDate</th>
+            <th>
+              Email
+            </th>
+            <th>UserName </th>
+            <th>FullName </th>
+            <th>Department </i></th>
+            <th>Position </i></th>
+            <th>CreateDate </i></th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -147,7 +155,7 @@
             </select>
             <p></p>
             <label for="name" id="labelRole"><b>Role</b></label
-            ><br />
+            >
             <input
               type="text"
               placeholder="Enter your role"
@@ -156,20 +164,6 @@
               required
             />
             <p></p>
-            <!-- <label for="name"><b>Password</b></label
-            ><br />
-            <input
-              type="text"
-              placeholder="Enter your password"
-              name="name"
-              id="password"
-              required
-            />
-            <p></p> -->
-            <!-- <label for="createdDate" id="createdDateLabel"
-              ><b>Create Date</b></label
-            ><br /> -->
-            <!-- <input type="date" name="createdDate" id="createdDate" required /> -->
           </div>
         </div>
 
