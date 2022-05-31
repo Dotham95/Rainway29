@@ -2,126 +2,100 @@ package com.vti.entity;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import com.vti.dto.DepartmentDTO;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
 @Entity
-@Table(name = "Account")
+@Table(name = "Employee")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Employee implements Serializable {
-	// đánh dấu version
+
 	private static final long serialVersionUID = 1L;
-	// để short thì truyền dữ liệu vào phải ép kiểu.
-	@Column(name = "AccountID")
+
+	@Column(name = "employee_id")
 	@Id
-	// đại diện cho tự động tăng
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 
-	@Column(name = "FullName", length = 50, nullable = false)
-	private String fullName;
+	@Column(name = "employee_code", length = 50, nullable = false)
+	private String employeecode;
 
-	@Column(name = "Username", length = 50, nullable = false, unique = true)
-	private String username;
-
-	@Column(name = "Email", length = 50, nullable = false, unique = true)
+	@Column(name = "email", length = 50, nullable = false, unique = true)
 	private String email;
 
+	@Column(name = "user_name", length = 50, nullable = false, unique = true)
+	private String username;
+
+	@Column(name = "full_name", length = 50, nullable = false, unique = true)
+	private String fullname;
+
+	@Column(name = "bithday")
+	@Temporal(TemporalType.DATE)
+	@CreationTimestamp
+	private Date bithday;
+
+	@Column(name = "address", length = 50, nullable = false, unique = true)
+	private String address;
+
+	@Column(name = "phone", length = 50, nullable = false, unique = true)
+	private int phone;
+
+	@Column(name = "id_card", length = 50, nullable = false, unique = true)
+	private int idcard;
+
+	@Column(name = "gender")
+	@Enumerated(EnumType.STRING)
+	private Gender gender;
+
+	@Column(name = "contract", length = 50, nullable = false, unique = true)
+	private String contract;
+
+	@Column(name = "`role`")
+	@Enumerated(EnumType.STRING)
+	private Role role;
+
+	@Column(name = "password", length = 50, nullable = false, unique = true)
+	private String password;
+
 	@ManyToOne
-	@JoinColumn(name = "DepartmentID", referencedColumnName = "DepartmentID")
+	@JoinColumn(name = "department_id", referencedColumnName = "department_id")
 	private Department department;
 
 	@ManyToOne
-	@JoinColumn(name = "PositionID", referencedColumnName = "PositionID")
+	@JoinColumn(name = "position_id", referencedColumnName = "position_id")
 	private Position position;
 
-	@Column(name = "CreateDate")
+	@Column(name = "create_date")
 	@Temporal(TemporalType.DATE)
 	@CreationTimestamp
-	private Date CreateDate;
+	private Date createDate;
 
-	public Employee() {
-		super();
+	public enum Role {
+		ADMIN, EMPLOYEE, MANAGER, ACCOUNTANT;
 	}
 
-	public Date getCreateDate() {
-		return CreateDate;
-	}
-
-	public void setCreateDate(Date createDate) {
-		CreateDate = createDate;
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	public String getFullName() {
-		return fullName;
-	}
-
-	public void setFullName(String fullName) {
-		fullName = fullName;
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		username = username;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		email = email;
-	}
-
-	public Department getDepartment() {
-		return department;
-	}
-
-	public void setDepartment(Department department) {
-		this.department = department;
-	}
-
-	public Position getPosition() {
-		return position;
-	}
-
-	public void setPosition(Position position) {
-		this.position = position;
-	}
-
-	@Override
-	public String toString() {
-		return "Account [id=" + id + ", fullName=" + fullName + ", username=" + username + ", email=" + email
-				+ ", department=" + department + ", position=" + position + ", CreateDate=" + CreateDate + "]";
+	public enum Gender {
+		MALE, FEMALE;
 	}
 
 }

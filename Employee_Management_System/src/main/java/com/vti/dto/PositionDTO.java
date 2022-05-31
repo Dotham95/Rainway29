@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PositionDTO {
 	private String name;
+	
 	private int id;
 
 }

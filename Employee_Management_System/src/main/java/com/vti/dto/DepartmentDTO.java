@@ -11,8 +11,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DepartmentDTO {
 	private int id;
+	
 	public String name;
+	
 	private int totalMember;
+	
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date createDate;
 }
